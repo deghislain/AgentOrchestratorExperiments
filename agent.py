@@ -8,10 +8,10 @@ from typing import List, Dict
 
 class Agent(ReActAgent):
     name: str = Field(description="Agent name")
-    capabilities: List[Dict] = Field(description="Agent capabilities")
+    capabilities: List[str] = Field(description="Agent capabilities")
     description: str = Field(description="Agent description")
 
-    def __init__(self, name: str, capabilities: List[Dict], description: str, llm: ChatModel, tools: list[AnyTool],
+    def __init__(self, name: str, capabilities: List[str], description: str, llm: ChatModel, tools: list[AnyTool],
                  memory: BaseMemory):
         super().__init__(llm, tools, memory)
         self.name = name
