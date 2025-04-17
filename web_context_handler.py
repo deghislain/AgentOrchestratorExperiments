@@ -26,12 +26,14 @@ class Context:
         self.callbacks = {}
         self.process_steps = process_steps
         self.team = team
+        self.running_agent = ""
+        self.current_step = ""
 
-    async def add_record(self, record_id: str, agent_data: AgentOutput):
-        logger.info(f"**************add_record START with input: {record_id} and: {agent_data.agent_name}")
-        self.data[record_id] = agent_data
+    async def add_record(self, record_id: str, data):
+        logger.info(f"**************add_record START with input: {record_id} and: {data}")
+        self.data[record_id] = data
         if record_id in self.callbacks:
-            await self.callbacks[record_id](record_id, agent_data)
+            await self.callbacks[record_id](data)
         logger.info(f"**************add_record END******************")
 
     def register_callback(self, record_id, callback):
@@ -39,25 +41,35 @@ class Context:
 
     def get_next_step(self, current_step: str):
         try:
-            index_next_step = self.process_steps.index(current_step)+1
-            return self.process_steps[index_next_step]
+            index_next_step = self.process_steps.index(current_step) + 1
+            if index_next_step < len( self.process_steps):
+                return self.process_steps[index_next_step]
+            else: return None
+
         except ValueError:
             return None
 
 
-def update_context(current_step, context):
-    async def handle_context_update(current_step, agent_data: AgentOutput):
-        previous_step_output = agent_data.agent_output
-        logger.info(f"************** handle_context_update with input: {previous_step_output} and: {agent_data.agent_name}")
-        next_step = context.get_next_step(current_step)
+def update_context(context):
+    async def handle_context_update(data):
         for key in context.team.keys():
-            if key.startswith(next_step):
-                agent = context.team[key]
-                logger.info(f" From context running {agent.name}")
-                result = await agent.run(previous_step_output)
-                logger.info(f" From context {agent.name} output: {result.result.text}")
-                await context.add_record(next_step, agent_data)
+            logger.info(f"handle_context_update//////////////////////////////////////////// {key}")
+            agent = context.team[key]
+            context.running_agent = key
+            next_step = context.get_next_step(context.current_step)
+            if next_step is not None:
+                context.current_step = next_step
+                logger.info(f"************** handle_context_update with input: {data}. Current agent: {key}--------")
+                prompt = f""" You are an AI agent with access to {data}. Your task is to follow the provided process steps as ordered in
+                in the following list: {context.process_steps}. 
+                This is the current step {next_step},  only execute it if it aligns with your capabilities."""
 
-    context.register_callback(current_step, handle_context_update)
+                result = await agent.run(prompt)
+                logger.info(f"************** handle_context_update Current agent: {agent.name} //***- output: {result.result.text}")
+                await agent.update_context(context, result.result.text, agent.name)
+            else:
+                logger.info(f"**************----------------------------------------- Process completed")
+
+    context.register_callback(f"{context.running_agent} : output", handle_context_update)
 
 

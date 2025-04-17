@@ -37,8 +37,8 @@ class Agent(ReActAgent):
         self.capabilities = capabilities
         self.description = description
 
-    async def update_context(self, context: Context, agent_data: AgentOutput, current_step: str):
-        logger.info(f"*************Agent updating the context********** with input: {agent_data.agent_name} and  {agent_data.agent_output}")
-        update_context(current_step, context)
+    async def update_context(self, context: Context, agent_output: str, agent_name: str):
+        logger.info(f"*************Agent updating the context********** with input: {agent_output} and  {agent_name}")
+        update_context(context)
 
-        await context.add_record(current_step, agent_data)
+        await context.add_record(f"{agent_name} : output", agent_output)

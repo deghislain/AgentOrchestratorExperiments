@@ -4,7 +4,7 @@ from web_team_builder import build_the_team
 from agent import Agent
 from web_context_handler import Context
 from web_prompt import get_the_team_goal
-from web_utils import retrieve_agent_capabilities, AgentOutput, parse_output
+from web_utils import retrieve_agent_capabilities, parse_output
 import asyncio
 import logging
 
@@ -55,14 +55,11 @@ async def main():
     result = await agent_orchestrator.run(complete_prompt)
     logger.info(f"*****************Agent Orchestrator response= {result.result.text}***************")
 
-    json_result = parse_output(result.result.text)
-    agent_data = AgentOutput()
-    agent_data.agent_name = "SystemOrchestrator"
-    prompts = json_result["prompts"]
-    agent_data.agent_output = prompts["search_prompt"]
     process_steps = ["Orchestration", "Search", "Write"]
     context = Context(process_steps, team)
-    await agent_orchestrator.update_context(context, agent_data, process_steps[0])
+    context.running_agent = "SystemOrchestrator"
+    context.current_step ="Orchestration"
+    await agent_orchestrator.update_context(context, result.result.text, "SystemOrchestrator")
 
     print(result.result.text)
 

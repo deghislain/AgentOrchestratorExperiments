@@ -72,7 +72,7 @@ def build_the_team() -> TeamBuilder:
     team.register_agent(name="SearchAgent", agent=web_researcher)
 
     report_writer = Agent(
-        name="ReportWriterAgent",
+        name="WriteReportAgent",
         capabilities=[
             """
                            Extract relevant information, identify key themes and insights, from websites return by 
@@ -86,6 +86,6 @@ def build_the_team() -> TeamBuilder:
         tools=[search_web],
         memory=TokenMemory(llm)
     )
-    team.register_agent(name="ReportWriterAgent", agent=report_writer)
+    team.register_agent(name="WriteReportAgent", agent=report_writer)
     logger.info("*****************build_the_team END***************")
     return team
