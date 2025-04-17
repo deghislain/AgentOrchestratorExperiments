@@ -15,6 +15,8 @@ def get_the_team_goal(details_report: str, agents_capabilities: str, number_agen
 
 
         Please provide two prompts that can be used by those {number_agents} agents to achieve the aforementioned goal.
+        Leverage other agents' outputs as inputs for your tasks. When crafting prompts, 
+        specify the agents and outputs to incorporate, ensuring seamless collaboration and informed results.
         You will return a response in JSON format. Here is an example of response:
         {{
                 "prompts":{ 

@@ -1,7 +1,7 @@
 from crewai_tools import ScrapeWebsiteTool
 from langchain_community.tools import DuckDuckGoSearchResults
 from beeai_framework.tools import tool
-from typing import Dict
+import re
 
 import logging
 
@@ -20,6 +20,21 @@ ch.setFormatter(formatter)
 
 # add ch to logger
 logger.addHandler(ch)
+
+
+def extract_links(text):
+    """
+    Extracts all links present in the given text.
+
+    Args:
+        text (str): The text to extract links from.
+
+    Returns:
+        list: A list of extracted links.
+    """
+    pattern = r"https?://\S+"
+    links = re.findall(pattern, text)
+    return links
 
 
 @tool
@@ -59,9 +74,6 @@ def search_web(topic: str) -> list[str]:
     logger.info("......................................................search_web********START")
     search = DuckDuckGoSearchResults()
     search_results = search.run(topic)
-    links = search_results.split(', links: ')
-    logger.info("......................................................search_web*************END")
+    links = extract_links(search_results)
+    logger.info(f"......................................................search_web*************END with output: {links}")
     return links
-
-
-
