@@ -69,9 +69,9 @@ def search_web(topic: str) -> list[str]:
             topic (str): The search topic to execute.
 
         Returns:
-            A list of websites containing information related to the topic
+            A list of websites related to the topic
         """
-    logger.info("......................................................search_web********START")
+    logger.info(f"......................................................search_web********START with input: {topic}")
     search = DuckDuckGoSearchResults()
     search_results = search.run(topic)
     links = extract_links(search_results)

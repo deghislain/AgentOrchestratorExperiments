@@ -1,9 +1,7 @@
 from typing import Dict
 from beeai_framework.agents.react import ReActAgent
-import json
 
 from beeai_framework.memory.token_memory import TokenMemory
-from beeai_framework.tools.search.duckduckgo import DuckDuckGoSearchTool
 from beeai_framework.adapters.ollama import OllamaChatModel
 from agent import Agent
 from web_app_tools import search_web

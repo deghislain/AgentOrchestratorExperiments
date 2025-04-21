@@ -2,8 +2,7 @@ from beeai_framework.agents.react import ReActAgent
 from beeai_framework.backend import ChatModel
 from beeai_framework.memory import BaseMemory
 from beeai_framework.tools import AnyTool
-from web_context_handler import Context, update_context
-from web_utils import AgentOutput
+from web_context_handler import Context
 from pydantic import Field
 from typing import List
 import logging
@@ -36,9 +35,3 @@ class Agent(ReActAgent):
         self.name = name
         self.capabilities = capabilities
         self.description = description
-
-    async def update_context(self, context: Context, agent_output: str, agent_name: str):
-        logger.info(f"*************Agent updating the context********** with input: {agent_output} and  {agent_name}")
-        update_context(context)
-
-        await context.add_record(f"{agent_name} : output", agent_output)

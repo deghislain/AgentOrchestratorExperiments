@@ -1,10 +1,9 @@
 from beeai_framework.memory.token_memory import TokenMemory
 from beeai_framework.adapters.ollama import OllamaChatModel
 from web_team_builder import build_the_team
-from agent import Agent
-from web_context_handler import Context
+from agent import Agent, Context
 from web_prompt import get_the_team_goal
-from web_utils import retrieve_agent_capabilities, parse_output
+from web_utils import retrieve_agent_capabilities
 import asyncio
 import logging
 
@@ -27,7 +26,7 @@ logger.addHandler(ch)
 
 
 async def main():
-    team = build_the_team()
+    #event = threading.Event()
     agent_orchestrator = Agent(
         name="SystemOrchestrator",
         capabilities=[
@@ -37,31 +36,28 @@ async def main():
                         the desired outcome.
                         """
         ],
-        description="specialized in searching the web",
+        description="specialized decomposing complex tasks into smaller manageable tasks",
         llm=llm,
         tools=[],
-        memory=TokenMemory(llm))
+        memory=TokenMemory(llm),
+    )
 
     details_report = """  Ensure the report has the following structure and information:
                           Definition of Artificial Intelligence (AI). Brief history and development of AI
                           Importance and relevance of AI in modern times
                     """
 
+    team = build_the_team()
     agents_capabilities = retrieve_agent_capabilities(team.get_the_team())
     number_agents = len(team.get_the_team())
-    team = team.get_the_team()
     complete_prompt = get_the_team_goal(details_report, agents_capabilities, number_agents)
     logger.info(f"*****************complete_prompt= {complete_prompt}***************")
     result = await agent_orchestrator.run(complete_prompt)
     logger.info(f"*****************Agent Orchestrator response= {result.result.text}***************")
 
-    process_steps = ["Orchestration", "Search", "Write"]
-    context = Context(process_steps, team)
-    context.running_agent = "SystemOrchestrator"
-    context.current_step ="Orchestration"
-    await agent_orchestrator.update_context(context, result.result.text, "SystemOrchestrator")
-
-    print(result.result.text)
+    context = Context(team=team.get_the_team())
+    #context.data[agent_orchestrator.name + " Output: "] = result.result.text
+    await context.add_record(result.result.text + "Output: ", result.result.text)
 
 
 if __name__ == "__main__":
