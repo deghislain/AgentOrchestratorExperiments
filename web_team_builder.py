@@ -1,10 +1,11 @@
 from typing import Dict
 from beeai_framework.agents.react import ReActAgent
+from beeai_framework.backend import SystemMessage
 
 from beeai_framework.memory.token_memory import TokenMemory
 from beeai_framework.adapters.ollama import OllamaChatModel
 from agent import Agent
-from web_app_tools import search_web
+from web_app_tools import search_web, scrap_web_page
 import asyncio
 import logging
 
@@ -49,7 +50,7 @@ class TeamBuilder:
         return self.team
 
 
-def build_the_team() -> TeamBuilder:
+async def build_the_team() -> TeamBuilder:
     logger.info("*****************build_the_team START***************")
     team = TeamBuilder()
     web_researcher = Agent(
@@ -67,6 +68,11 @@ def build_the_team() -> TeamBuilder:
         tools=[search_web],
         memory=TokenMemory(llm)
     )
+    await web_researcher.memory.add(SystemMessage(
+        content="""Your name is SearchAgent. You are a helpful assistant equipped with tools that allows you 
+        to search the web and return a list of websites given a topic.If you need to use the search_web tool
+         you must use a count of 5."""))
+
     team.register_agent(name="SearchAgent", agent=web_researcher)
 
     report_writer = Agent(
@@ -81,9 +87,13 @@ def build_the_team() -> TeamBuilder:
         description="This agent is equipped with tools that given a list of websites, "
                     "it extract its contents and use the information related to a provided topic to write a report.",
         llm=llm,
-        tools=[search_web],
+        tools=[scrap_web_page],
         memory=TokenMemory(llm)
     )
+    await report_writer.memory.add(SystemMessage(
+        content="""Your name is WriteReportAgent. You are a helpful assistant equipped with tools that allows you 
+           to extract its contents and use the information related to a provided topic to write a report given 
+           a list of websites. If you need to use the scrap_web_page tool you must use a count of 5."""))
     team.register_agent(name="WriteReportAgent", agent=report_writer)
     logger.info("*****************build_the_team END***************")
     return team

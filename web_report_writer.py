@@ -47,17 +47,18 @@ async def main():
                           Importance and relevance of AI in modern times
                     """
 
-    team = build_the_team()
-    agents_capabilities = retrieve_agent_capabilities(team.get_the_team())
-    number_agents = len(team.get_the_team())
+    team = await build_the_team()
+    agents = team.get_the_team()
+    agents_capabilities = retrieve_agent_capabilities(agents)
+    number_agents = len(agents)
     complete_prompt = get_the_team_goal(details_report, agents_capabilities, number_agents)
     logger.info(f"*****************complete_prompt= {complete_prompt}***************")
     result = await agent_orchestrator.run(complete_prompt)
     logger.info(f"*****************Agent Orchestrator response= {result.result.text}***************")
 
-    context = Context(team=team.get_the_team())
+    context = Context(team=agents)
     #context.data[agent_orchestrator.name + " Output: "] = result.result.text
-    await context.add_record(result.result.text + "Output: ", result.result.text)
+    await context.add_record(agent_orchestrator.name, result.result.text)
 
 
 if __name__ == "__main__":
