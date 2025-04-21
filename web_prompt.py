@@ -20,10 +20,10 @@ def get_the_team_goal(details_report: str, agents_capabilities: str, number_agen
         You will return a response in JSON format. Here is an example of response:
         {{
                 "prompts":{ {"search_prompt": "Here goes the search prompt ",
-                             "description": "This is the prompt use to search the web by the SearchAgent"
+                             "description": "This prompt should be used to search the web by the SearchAgent"
                              },
     {"write_report_prompt": "Here goes the write report prompt",
-     "description": "This is the prompt use to write the report by the WriteReportAgent"
+     "description": "This prompt should be used to write the report by the WriteReportAgent"
      } }
                 
         }}  

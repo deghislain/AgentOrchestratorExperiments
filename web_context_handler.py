@@ -1,6 +1,7 @@
 from typing import Dict
 import asyncio
 from beeai_framework.agents.react import ReActAgent
+
 import random
 from typing import List
 import logging
@@ -35,19 +36,19 @@ class Context:
         code = random.randrange(100, 200)
         record_id = str(code) + "_" + agent_name + "_" + "Output"
         self.data[record_id] = output
-        for agent_name, agent_instance in self.team.items():
-            await asyncio.create_task(self._notify_agent(agent_name))
+        for agent in self.team.keys():
+            logger.info(f"Creating tasks with Agent {agent}-/------//--------////")
+            await asyncio.create_task(self._notify_agent(agent))
         logger.info(f"*************add_record END****************")
 
     async def _notify_agent(self, agent_name: str):
-        while True:
-            logger.info(f"Notifying agent: {agent_name} with data: {self.data}................")
+        #while True:
+        logger.info(f"Notifying agent: {agent_name} with data: {self.data}................")
 
-            prompt = f"""You are an AI agent with access to the following context: {self.data}. Your task is to retrieve
-            the prompt that match your capabilities from the provided context then use the tools at your disposal 
-            to execute and returns the output. only execute it if it aligns with your capabilities."""
-            result = await self.team[agent_name].run(prompt)
+        prompt = f"""Having access to the following context: {self.data} and using your memory, your task is to retrieve
+        the prompt that match your capabilities then use the tools at your disposal to execute it and returns the results. 
+        only execute it if it aligns with your capabilities. YOU MUST ONLY RETURN YOUR FINAL ANSWER NO INTERMEDIARY STEPS OR RESULTS"""
+        result = await self.team[agent_name].run(prompt)
 
-            logger.info(f"///////////////////Agent {agent_name} output: {result.result.text}")
-            await self.add_record(agent_name,  result.result.text)
+        logger.info(f"///////////////////_notify_agent END: Agent {agent_name} output: {result.result.text}")
 
