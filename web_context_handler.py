@@ -26,10 +26,7 @@ logger.addHandler(ch)
 class Context:
     def __init__(self, team: Dict[str, ReActAgent]):
         self.data = {}
-        self.callbacks = {}
         self.team = team
-        self.running_agent = ""
-        self.current_step = ""
 
     async def add_record(self, agent_name: str, output):
         logger.info(f"*************add_record START with input: {agent_name} and: {output}")
@@ -51,4 +48,3 @@ class Context:
         result = await self.team[agent_name].run(prompt)
 
         logger.info(f"///////////////////_notify_agent END: Agent {agent_name} output: {result.result.text}")
-
