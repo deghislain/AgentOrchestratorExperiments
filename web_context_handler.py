@@ -40,19 +40,16 @@ class Context:
     def _update_context(self, new_data: str, agent_name: str):
         code = random.randrange(100, 200)
         record_id = str(code) + "_" + agent_name + "_" + "Output"
-        self.data[record_id] = new_data
+        self.data[record_id] = agent_name + " output= " + new_data
 
     async def _notify_agent(self, agent_name: str):
         logger.info(f"Notifying agent: {agent_name} with data: {self.data}................")
 
         prompt = f"""Having access to the following context: {self.data} and using your memory, your task is to retrieve
         the prompt that match your capabilities then use the tools at your disposal to execute it and returns the results. 
-        USE OTHER AGENTS OUTPUT WHENEVER YOU SEE FIT.
+        USE OTHER AGENTS OUTPUT VALUE WHENEVER YOU SEE FIT.
         only execute it if it aligns with your capabilities."""
-        test = """
-        Conduct a targeted web search for a comprehensive definition of Artificial Intelligence (AI). Prioritize
-         results from academic journals, research papers, government websites, and reputable news outlets. 
-        """
+
         result = await self.team[agent_name].run(prompt)
         self._update_context(result.result.text, agent_name)
 

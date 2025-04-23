@@ -1,6 +1,7 @@
 from crewai_tools import ScrapeWebsiteTool
 from langchain_community.tools import DuckDuckGoSearchResults
 from beeai_framework.tools import tool
+from urllib.parse import urlparse
 import re
 
 import logging
@@ -22,21 +23,6 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-def extract_links(text):
-    """
-    Extracts all links present in the given text.
-
-    Args:
-        text (str): The text to extract links from.
-
-    Returns:
-        list: A list of extracted links.
-    """
-    pattern = r"https?://\S+"
-    links = re.findall(pattern, text)
-    return links
-
-
 @tool
 def scrap_web_page(links: str) -> list[str]:
     """
@@ -48,18 +34,22 @@ def scrap_web_page(links: str) -> list[str]:
            Returns:
                A list of websites contents related to the query
            """
-    logger.info(f"......................................................scrap_web_page********START with input: {links}")
+    logger.info(
+        f"......................................................scrap_web_page********START with input: {links}")
     websites_content = []
-    links = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', links)
-    for link in links:
+    urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',links)
+
+    logger.info(f"**********************************urls: {urls}")
+    for link in urls:
         try:
             s_tool = ScrapeWebsiteTool(website_url=link)
             content = s_tool.run()
             logger.info(f"#################################scrap web page: {link} with output: {content}")
             websites_content.append(content)
         except Exception as ex:
-            logger.info("Error while parsing a link", ex)
-        logger.info(f"......................................................scrap_web_page*************END with output: {websites_content}")
+            logger.info(f"Error while extracting the content of this website {link}", ex)
+        logger.info(
+            f"......................................................scrap_web_page*************END with output: {websites_content}")
     return websites_content
 
 
@@ -76,7 +66,7 @@ def search_web(query: str) -> list[str]:
         """
     logger.info(f"......................................................search_web********START with input: {query}")
     search = DuckDuckGoSearchResults()
-    search_results = search.run(query)
-    links = extract_links(search_results)
-    logger.info(f"......................................................search_web*************END with output: {links}")
-    return links
+    search_results =search.run(query)
+    logger.info(
+        f"......................................................search_web*************END with output: {search_results}")
+    return search_results

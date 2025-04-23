@@ -23,22 +23,5 @@ def retrieve_agent_capabilities(data_dict):
         enumerate(data_dict.items()))
 
 
-def parse_output(output: str) -> json:
-    print("start")
-    prefix = ""
-    for index in range(len(output)):
-        #print(prefix)
-        if output[index] != '{':
-            prefix += output[index]
-        else:
-            break
 
-    output = output[len(prefix):].strip()
-    try:
-        # Parse the JSON string
-        data = json.loads(output)
-        return data
-    except json.JSONDecodeError as e:
-        print(f"Error parsing JSON: {e}")
-        return None
 

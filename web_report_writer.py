@@ -30,7 +30,8 @@ logger.addHandler(ch)
 async def main():
     details_report = """  Ensure the report has the following structure and information:
                              Definition of Artificial Intelligence (AI). Brief history and development of AI
-                             Importance and relevance of AI in modern times
+                             Importance and relevance of AI in modern times.
+                             THE FINAL REPORT MUST BE IN MARKDOWN FORMAT.
                        """
     agent_orchestrator = ReActAgent(llm=llm, tools=[], memory=TokenMemory(llm))
 

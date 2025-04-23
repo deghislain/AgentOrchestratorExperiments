@@ -2,8 +2,8 @@
 def get_the_team_goal(details_report: str, agents_capabilities: str, number_agents: int):
     return f"""
         Given the following goal: search the web and write an outstanding report on AI.
-
-            
+        
+        MAKE SURE THE FOLLOWING WRITING INSTRUCTIONS ARE FOLLOWED:    
             {details_report}
              
             Cite key sources, studies, and research papers
