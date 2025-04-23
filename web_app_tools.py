@@ -48,32 +48,35 @@ def scrap_web_page(links: str) -> list[str]:
            Returns:
                A list of websites contents related to the query
            """
-    logger.info("......................................................scrap_web_page********START")
+    logger.info(f"......................................................scrap_web_page********START with input: {links}")
     websites_content = []
+    links = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', links)
     for link in links:
         try:
             s_tool = ScrapeWebsiteTool(website_url=link)
-            websites_content.append(s_tool.run())
+            content = s_tool.run()
+            logger.info(f"#################################scrap web page: {link} with output: {content}")
+            websites_content.append(content)
         except Exception as ex:
             logger.info("Error while parsing a link", ex)
-            logger.info("......................................................scrap_web_page*************END")
+        logger.info(f"......................................................scrap_web_page*************END with output: {websites_content}")
     return websites_content
 
 
 @tool
-def search_web(topic: str) -> list[str]:
+def search_web(query: str) -> list[str]:
     """
-        Search the web for the given topic and returns a list of websites.
+        Search the web for the given query and returns a list of websites.
 
         Args:
-            topic (str): The search topic to execute.
+            query (str): The search query to execute.
 
         Returns:
             A list of websites related to the topic
         """
-    logger.info(f"......................................................search_web********START with input: {topic}")
+    logger.info(f"......................................................search_web********START with input: {query}")
     search = DuckDuckGoSearchResults()
-    search_results = search.run(topic)
+    search_results = search.run(query)
     links = extract_links(search_results)
     logger.info(f"......................................................search_web*************END with output: {links}")
     return links

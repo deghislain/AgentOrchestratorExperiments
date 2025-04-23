@@ -6,6 +6,6 @@ dist/
 wheels/
 *.egg-info
 *.toml
-
+test.py
 # Virtual environments
 .venv

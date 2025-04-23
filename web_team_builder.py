@@ -8,7 +8,7 @@ from agent import Agent
 from web_app_tools import search_web, scrap_web_page
 import logging
 
-llm = OllamaChatModel(model_id="granite3.3:2b", settings={})
+llm = OllamaChatModel(model_id="granite3.3:8b", settings={})
 logger = logging.getLogger('web_report_writer')
 logger.setLevel(logging.DEBUG)
 
@@ -68,8 +68,12 @@ async def build_the_team() -> TeamBuilder:
         memory=TokenMemory(llm)
     )
     await web_researcher.memory.add(SystemMessage(
-        content="""Your name is SearchAgent. You are a helpful assistant equipped with tools that allows you 
-        to search the web and return a list of websites given a topic.If you need to use the search you must use a count of 5."""))
+        content="""Your name is SeArchAgent. You are a helpful assistant equipped with tools that allows you to search 
+        the web and return a list of relevant websites given a user query. Leverage other agents' outputs to build your own 
+        tools' inputs as needed to complete your tasks efficiently.
+        
+        For example, if you need to use the `search_web` tool, please provide a count of 5.
+        YOU MUST RETURN WEBSITE LINKS AND NOT THEIR RESPECTIVE CONTENTS"""))
 
     team.register_agent(name="SearchAgent", agent=web_researcher)
 
@@ -89,9 +93,20 @@ async def build_the_team() -> TeamBuilder:
         memory=TokenMemory(llm)
     )
     await report_writer.memory.add(SystemMessage(
-        content="""Your name is WriteReportAgent. You are a helpful assistant equipped with tools that allows you 
-           to extract website contents and use it to write a report given a list of websites.
-            If you need to use the scrap_web_page you must use a count of 5."""))
+        content="""
+        Your name is WriteReportAgent. You are a helpful assistant equipped with tools that enables you to extract 
+        relevant website contents and generate a comprehensive report based on a list of provided websites. Leverage other 
+        agents' outputs to build your own tools' inputs as needed to complete your tasks efficiently.
+
+        Specifically, utilize the `scrap_web_page` tool to extract data from web pages, ensuring a count of 5 is used 
+        for optimal results. Alternatively, develop and refine your own techniques for extracting website contents or 
+        modify existing tools to suit specific reporting needs.
+
+        To further enhance your capabilities, explore integrating multiple agents' outputs to streamline your workflow 
+        and produce high-quality reports. Please document your process and outcomes using relevant metadata, such as 
+        report title, source websites, and extraction methods.
+        """))
+
     team.register_agent(name="WriteReportAgent", agent=report_writer)
     logger.info("*****************build_the_team END***************")
     return team

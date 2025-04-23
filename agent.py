@@ -1,8 +1,7 @@
-from beeai_framework.agents.react import ReActAgent
 from beeai_framework.backend import ChatModel
 from beeai_framework.memory import BaseMemory
 from beeai_framework.tools import AnyTool
-from web_context_handler import Context
+from beeai_framework.agents.tool_calling.agent import ToolCallingAgent
 from pydantic import Field
 from typing import List
 import logging
@@ -24,14 +23,14 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-class Agent(ReActAgent):
+class Agent(ToolCallingAgent):
     name: str = Field(description="Agent name")
     capabilities: List[str] = Field(description="Agent capabilities")
     description: str = Field(description="Agent description")
 
     def __init__(self, name: str, capabilities: List[str], description: str, llm: ChatModel, tools: list[AnyTool],
                  memory: BaseMemory):
-        super().__init__(llm, tools, memory)
+        super().__init__(llm=llm, memory=memory, tools=tools)
         self.name = name
         self.capabilities = capabilities
         self.description = description
