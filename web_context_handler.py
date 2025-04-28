@@ -1,3 +1,4 @@
+import uuid
 from typing import Dict
 import asyncio
 from beeai_framework.agents.react import ReActAgent
@@ -29,17 +30,15 @@ class Context:
 
     async def add_record(self, agent_name: str, output):
         logger.info(f"*************add_record START with input: {agent_name} and: {output}")
-        code = random.randrange(100, 200)
-        record_id = str(code) + "_" + agent_name + "_" + "Output"
-        self.data[record_id] = output
+        record_id = uuid.uuid1()
+        self.data[record_id] = agent_name + " output= "+ output
         for agent in self.team.keys():
             logger.info(f"Creating tasks with Agent {agent}-/------//--------////")
             await asyncio.create_task(self._notify_agent(agent))
         logger.info(f"*************add_record END****************")
 
     def _update_context(self, new_data: str, agent_name: str):
-        code = random.randrange(100, 200)
-        record_id = str(code) + "_" + agent_name + "_" + "Output"
+        record_id = uuid.uuid1()
         self.data[record_id] = agent_name + " output= " + new_data
 
     async def _notify_agent(self, agent_name: str):

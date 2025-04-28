@@ -24,20 +24,21 @@ logger.addHandler(ch)
 
 
 @tool
-def scrap_web_page(links: str) -> list[str]:
+def scrap_web_page(search_output: str) -> list[str]:
     """
-           Takes a list of websites then scrap and combine their respective content.
+           The SearchAgent generates a list of websites, which are then scraped for content and
+            aggregated into a single output.
 
            Args:
-               links (list): The list of website urls to scrap and extract the contents.
+               search_output : The search agent output containing website urls to be scraped.
 
            Returns:
                A list of websites contents related to the query
            """
     logger.info(
-        f"......................................................scrap_web_page********START with input: {links}")
+        f"......................................................scrap_web_page********START with input: {search_output}")
     websites_content = []
-    urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',links)
+    urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',search_output)
 
     logger.info(f"**********************************urls: {urls}")
     for link in urls:
